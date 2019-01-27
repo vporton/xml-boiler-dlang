@@ -1,24 +1,14 @@
-# Compiled Object files
-*.o
-*.obj
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.a
-*.lib
-
-# Executables
-*.exe
-
-# DUB
 .dub
 docs.json
 __dummy.html
 docs/
-
-# Code coverage
+xml-boiler-dlang.so
+xml-boiler-dlang.dylib
+xml-boiler-dlang.dll
+xml-boiler-dlang.a
+xml-boiler-dlang.lib
+xml-boiler-dlang-test-*
+*.exe
+*.o
+*.obj
 *.lst

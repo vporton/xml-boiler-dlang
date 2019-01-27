@@ -1,0 +1,13 @@
+{
+	"name": "xml-boiler-dlang",
+	"authors": [
+		"Victor Porton"
+	],
+	"dependencies": {
+		"ae": "~>0.0.2331"
+	},
+	"libs": ["z"],
+	"description": "Automatically transform between XML namespaces: https://vporton.github.io/xml-boiler-docs/",
+	"copyright": "Copyright © 2019, Victor Porton",
+	"license": "AGPLv3"
+}
