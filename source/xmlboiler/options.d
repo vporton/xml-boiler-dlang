@@ -4,19 +4,15 @@ import std.container.rbtree;
 import rdf.redland.model;
 import xmlboiler.base;
 
-// TODO: Identifier casing
-enum WorklowKind { TRANSFORMATION, VALIDATION }
+enum WorklowKind { transformation, validation }
 
-// TODO: Identifier casing
-enum RecursiveDownload { NONE, DEPTH_FIRST, BREADTH_FIRST }
+enum RecursiveDownload { none, depthFirst, breadthFirst }
 
-// TODO: Identifier casing
-enum RecursiveRetrievalPriorityOrderElement { SOURCES, TARGETS, WORKFLOW_TARGETS }
+enum RecursiveRetrievalPriorityOrderElement { sources, targets, workflowTargets }
 
 // probably somehow slow
 alias RecursiveRetrievalPriority = RedBlackTree!RecursiveRetrievalPriorityOrderElement;
 
-// TODO: Graph is not yet defined
 alias Downloader = Model delegate(URI);
 
 struct RecursiveDownloadOptions {

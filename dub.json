@@ -4,7 +4,9 @@
 		"Victor Porton"
 	],
 	"dependencies": {
-		"ae": "~>0.0.2331"
+		"rdf_dlang": "~>1.0.17",
+		"ae": "~>0.0.2331",
+		"urld": "~>2.1.1"
 	},
 	"libs": ["z"],
 	"description": "Automatically transform between XML namespaces: https://vporton.github.io/xml-boiler-docs/",
