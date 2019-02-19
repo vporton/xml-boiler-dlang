@@ -22,5 +22,10 @@ struct RecursiveDownloadOptions {
     RecursiveRetrievalPriority retrievalPriority;
 }
 
+//struct InstalledSoftwareOptions {
+//    Nullable!BasePackageManaging packageManager; // isNull means not to use package_manager
+//    bool usePath = true;
+//}
+
 // TODO
 
