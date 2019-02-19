@@ -1,8 +1,8 @@
-module xmlboiler.options;
+module xmlboiler.core.options;
 
 import std.container.rbtree;
 import rdf.redland.model;
-import xmlboiler.base;
+import xmlboiler.core.base;
 
 enum WorklowKind { transformation, validation }
 

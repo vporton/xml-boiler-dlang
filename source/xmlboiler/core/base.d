@@ -1,4 +1,4 @@
-module xmlboiler.base;
+module xmlboiler.core.base;
 
 static import url;
 
