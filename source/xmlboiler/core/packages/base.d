@@ -18,9 +18,5 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-module xmlboiler.core.base;
+module xmlboiler.core.packages.base;
 
-static import url;
-
-//alias URI = string;
-alias URI = url.URL;
