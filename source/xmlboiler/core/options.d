@@ -45,7 +45,7 @@ struct RecursiveDownloadOptions {
 }
 
 struct InstalledSoftwareOptions {
-    Nullable!BasePackageManaging packageManager; // isNull means not to use package_manager
+    Nullable!BasePackageManaging packageManager; // null means not to use package_manager
     bool usePath = true;
 }
 
