@@ -22,8 +22,10 @@ module xmlboiler.core.options;
 
 import std.typecons;
 import std.container.rbtree;
+import std.experimental.logger;
 import rdf.redland.model;
 import xmlboiler.core.base;
+import xmlboiler.core.execution_context;
 import xmlboiler.core.packages.base;
 
 enum WorklowKind { transformation, validation }
@@ -49,5 +51,68 @@ struct InstalledSoftwareOptions {
     bool usePath = true;
 }
 
-// TODO
+enum WeightFormula { inverseOfSum, sumOfInverses }
 
+class BaseAlgorithmOptions {
+    ExecutionContext executionContext;
+    Logger errorLogger; // may be stderr
+    //BaseCommandRunner commandRunner; // TODO
+    //MyOpener urlOpener; // TODO
+    //WorklowKind kind;
+    RecursiveDownloadOptions recursivePptions;
+    InstalledSoftwareOptions installedSoftOptions;
+    WeightFormula weightFormula;
+}
+
+enum NotInTargetNamespace {
+    ignore,
+    remove, // TODO: Not implemented
+    error
+}
+
+struct BaseAutomaticWorkflowElementOptions {
+    BaseAlgorithmOptions algorithmOptions;
+    NotInTargetNamespace notInTarget;
+    alias algorithmOptions this;
+}
+
+/* Validation */
+
+enum ValidationOrderType { depthFirst, breadthFirst }
+
+struct ValidationAutomaticWorkflowElementOptions {
+    BaseAutomaticWorkflowElementOptions base;
+    ValidationOrderType validationOrder;
+    bool unknownNamespacesIsInvalid;
+    alias base this;
+}
+
+/* Transformation */
+
+/// For `chain` command.
+struct ChainOptions {
+    BaseAutomaticWorkflowElementOptions elementOptions;
+    Nullable!URI universalPrecedence; // TODO: Find a better name for this option
+    RedBlackTree!URI targetNamespaces;
+    alias elementOptions this;
+}
+
+/// For `script` command.
+struct ScriptOptions {
+    BaseAutomaticWorkflowElementOptions elementOptions;
+    URI scriptURL;
+    alias elementOptions this;
+}
+
+/// For `script` command.
+struct TransformOptions {
+    BaseAutomaticWorkflowElementOptions elementOptions;
+    URI transformURL;
+    alias elementOptions this;
+}
+
+/// For `pipe` command.
+struct PipelineOptions {
+    BaseAutomaticWorkflowElementOptions elementOptions;
+    alias elementOptions this;
+}
