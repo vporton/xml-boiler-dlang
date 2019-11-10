@@ -26,7 +26,7 @@ The following organizations were asked to support this project:
 
 # Project description #
 
-##Overview##
+## Overview ##
 
 It was written a specification (draft but already "functional") for automatic transformation and validation of complex (possibly multi-namespace) XML documents based on namespaces, written a software (XML Boiler) to implement these transformations. Written a short tutorial for XML Boiler.
 
@@ -72,7 +72,7 @@ The benefits of the project include:
 
 * integrate all of the above in single command
 
-##Intellectual Merit##
+## Intellectual Merit ##
 
 There was no automatic way to transform between XML files of different formats previously. This new way is a technological revolution. The same concerns validation of multi-namespace XML documents.
 
