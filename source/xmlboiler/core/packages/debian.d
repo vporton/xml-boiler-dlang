@@ -5,6 +5,7 @@ import xmlboiler.core.rdf_recursive_descent.base;
 
 
 class DebianPackageManaging(BasePackageManaging) {
+    // TODO: Unittest.
     static string determine_package_version(string package_name) {
         enforce(!package_name.contains(' ')); // FIXME: Check also for no special chars.
 
