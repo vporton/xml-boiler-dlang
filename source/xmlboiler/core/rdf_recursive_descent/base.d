@@ -88,7 +88,7 @@ class ParseResult(T): BaseParseResult {
         m_value = _value;
     }
     alias m_value this;
-    @property ref T getValue() { return m_value; }
+    @property ref T value() { return m_value; }
 }
 
 /**
@@ -99,8 +99,8 @@ Usually NodeParser and Predicate parser call each other (as in mutual recursion)
 WARNING: Don't use this parser to parse recursive data structures,
 because it may lead to infinite recursion on circular RDF.
 */
-interface NodeParser {
-    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
+class NodeParser { // TODO: Should it be interface
+    abstract BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
 }
 
 /**

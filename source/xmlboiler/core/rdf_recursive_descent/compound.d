@@ -19,9 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import std.algorithm;
+import std.array;
 import std.format;
 import rdf.redland.model;
 import rdf.redland.node;
+import rdf.redland.node_iterator;
 import xmlboiler.core.rdf_recursive_descent.base;
 
 
@@ -60,7 +62,7 @@ class CheckedNodeParser : NodeParserWithError {
         f = _f;
         error_msg = _error_msg;
     }
-    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
+    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
         auto v = child.parse(parse_context, model, node);
         if (!f(v)) parse_context.raise(on_error, error_msg);
         return v;
@@ -90,7 +92,7 @@ class Choice : NodeParserWithError {
         super(on_error);
         choices = _choices;
     }
-    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
+    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
         foreach(p; choices) {
             try {
                 return p.parse(parse_context, model, node);
@@ -111,10 +113,10 @@ class ZeroOrMorePredicate : PredicateParser {
         super(predicate);
         child = _child;
     }
-    // TODO: Use a range.
-    override ParseResult!(BaseParseResult[]) parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
+    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) { // FIXME: narrow return type
         auto iter = model.getTargets(node, predicate);
-        return map!(elt => child.parse(parse_context, model, elt))(iter);
+        auto result = map!(elt => child.parse(parse_context, model, elt))(cast(NodeIteratorWithoutFinalize) iter);
+        return new ParseResult!(BaseParseResult[])(result.array); // TODO: Use a range.
     }
 }
 
@@ -124,10 +126,10 @@ class OneOrMorePredicate : PredicateParserWithError {
         super( _predicate, _on_error);
         child = _child;
     }
-    override ParseResult!(BaseParseResult[]) parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
+    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) { // FIXME: narrow return type
         auto parent = new ZeroOrMorePredicate(predicate, child);
-        auto value = parent.parse(parse_context, model, node);
-        if (value.length == 0) {
+        auto value = cast(ParseResult!(BaseParseResult[])) parent.parse(parse_context, model, node);
+        if (value.value.length == 0) {
             string s() {
                 return parse_context.translate("Must have at least one predicate %s for node %s.").format(predicate, node);
             }
@@ -144,14 +146,14 @@ class OnePredicate : PredicateParserWithError {
         child = _child;
     }
     override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
-        immutable v = model.getTargets(node, predicate).array;
+        auto v = model.getTargets(node, predicate).array;
         if (v.length != 1) {
             string s() {
                 return parse_context.translate("Exactly one predicate %s required for node %s.").format(predicate, node);
             }
             parse_context.raise(on_error, s);
         }
-        return child.parse( parse_context, model, v[0]);
+        return child.parse(parse_context, model, v[0]);
     }
 }
 
@@ -164,11 +166,11 @@ class ZeroOnePredicate : PredicateParserWithError {
         default_ = default_value;
     }
     override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
-        v = model.getTargets( node, predicate).array;
+        auto v = model.getTargets( node, predicate).array;
         if (!v) return default_;
         if (v.length > 1) {
             string s() {
-                parse_context.translate("Cannot be more than one predicate %s for node %s.").format(predicate, node);
+                return parse_context.translate("Cannot be more than one predicate %s for node %s.").format(predicate, node);
             }
             parse_context.raise(on_error, s);
         }
