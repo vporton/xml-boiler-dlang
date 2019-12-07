@@ -24,8 +24,6 @@ import rdf.redland.model;
 import rdf.redland.node;
 import xmlboiler.core.execution_context;
 
-// TODO: Constructors for exception classes.
-
 /**
 Some people say that exceptions for control flow are bad. Some disagree.
 
@@ -56,21 +54,21 @@ class ParseContext {
     this(ExecutionContext _execution_context) {
         execution_context = _execution_context;
     }
-    void raise(ErrorMode handler, string str) {
-        raise( handler, ()=>str);
+    void raise(ErrorMode handler, string str, string file = __FILE__, size_t line = __LINE__) {
+        raise( handler, () => str, file, line);
     }
-    void raise(ErrorMode handler, string delegate() strGen) {
+    void raise(ErrorMode handler, string delegate() strGen, string file = __FILE__, size_t line = __LINE__) {
         switch (handler) {
             case ErrorMode.IGNORE:
-                throw new ParseException("Non-fatal parse exception"); // By the sound logic should be no exception msg, but so.
+                throw new ParseException("Non-fatal parse exception", file, line); // By the sound logic should be no exception msg, but so.
             case ErrorMode.WARNING:
                 immutable str = strGen();
                 execution_context.logger.warning(str);
-                throw new ParseException(str);
+                throw new ParseException(str, file, line);
             case ErrorMode.FATAL:
                 immutable str = strGen();
                 execution_context.logger.error(str);
-                throw new FatalParseException(str);
+                throw new FatalParseException(str, file, line);
             default:
                 assert(0);
         }
