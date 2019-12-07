@@ -33,8 +33,9 @@ interface BasePackageManaging {
     Return `isNull` if not installed.
     The version is stripped any distro-specifics. So it is "1.1.29" not "1.1.29-5".
     */
-    Nullable!string determine_package_version(string packageName);
-    Version createVersion(string v);
+    // TODO: `static` here is wrong.
+    static string determine_package_version(string packageName);
+    static Version createVersion(string v);
 }
 
 private int compareVersionNumbers(string a, string b) {

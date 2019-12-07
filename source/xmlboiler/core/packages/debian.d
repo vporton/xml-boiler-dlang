@@ -18,24 +18,34 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+module xmlboiler.core.packages.debian;
+
+import std.algorithm;
 import std.exception;
 import std.regex;
 import std.process;
-import xmlboiler.core.rdf_recursive_descent.base;
+import xmlboiler.core.packages.base;
 
 
-class DebianPackageManaging(BasePackageManaging) {
+class DebianPackageManaging : BasePackageManaging {
     // TODO: Unittest.
-    static string determine_package_version(string package_name) {
-        enforce(!package_name.contains(' ')); // FIXME: Check also for no special chars.
+    static dstring determine_package_version(string package_name) {
+        enforce(!package_name.canFind(' ')); // FIXME: Check also for no special chars.
 
         auto pipes = pipeProcess("dpkg " ~ package_name, Redirect.stdout);
-        auto m = matchFirst(pipes.stdout, RegExp("^Version: (.*)"));
+        // TODO: Suboptimal efficiency:
+        import std.array;
+        immutable dstring text = cast(dstring) pipes.stdout.byLine.joiner.array;
+        auto m = matchFirst(text, regex("^Version: (.*)"d));
         if (!m) return null;
-        string version_ = m.front;
+        dstring version_ = m.front;
         // https://www.debian.org/doc/debian-policy/#s-f-version
-        version_ = matchFirst(version_, r"^([0-9]+:)?(.*)(-[a-zA-Z0-9+.~]+)?$")[2];
+        version_ = matchFirst(version_, r"^([0-9]+:)?(.*)(-[a-zA-Z0-9+.~]+)?$"d)[2];
         return version_;
+    }
+
+    static Version createVersion(string v) {
+        return new VersionClass(v);
     }
 
     alias VersionClass = UniversalVersion;
