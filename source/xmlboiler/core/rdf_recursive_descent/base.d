@@ -20,4 +20,108 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 module xmlboiler.core.rdf_recursive_descent.base;
 
-// TODO
+import rdf.redland.model;
+import rdf.redland.node;
+import xmlboiler.core.execution_context;
+
+// TODO: Constructors for exception classes.
+
+/**
+Some people say that exceptions for control flow are bad. Some disagree.
+
+Victor Porton finds that doing this without exceptions is somehow cumbersome and may be error-prone.
+*/
+class BaseParseException : Exception {
+    this(string msg, string file = __FILE__, size_t line = __LINE__) {
+        super(msg, file, line);
+    }
+}
+
+class ParseException : BaseParseException {
+    this(string msg, string file = __FILE__, size_t line = __LINE__) {
+        super(msg, file, line);
+    }
+}
+
+class FatalParseException : BaseParseException {
+    this(string msg, string file = __FILE__, size_t line = __LINE__) {
+        super(msg, file, line);
+    }
+}
+
+enum ErrorMode { IGNORE, WARNING, FATAL }
+
+class ParseContext {
+    ExecutionContext execution_context;
+    this(ExecutionContext _execution_context) {
+        execution_context = _execution_context;
+    }
+    void raise(ErrorMode handler, string str) {
+        raise( handler, ()=>str);
+    }
+    void raise(ErrorMode handler, string delegate() strGen) {
+        switch (handler) {
+            case ErrorMode.IGNORE:
+                throw new ParseException("Non-fatal parse exception"); // By the sound logic should be no exception msg, but so.
+            case ErrorMode.WARNING:
+                immutable str = strGen();
+                execution_context.logger.warning(str);
+                throw new ParseException(str);
+            case ErrorMode.FATAL:
+                immutable str = strGen();
+                execution_context.logger.error(str);
+                throw new FatalParseException(str);
+            default:
+                assert(0);
+        }
+    }
+
+    // to shorten code
+    string translate(string str) {
+        return execution_context.translations.gettext(str);
+    }
+}
+
+/**
+Parses a node of RDF resource (and its "subnodes").
+
+Usually NodeParser and Predicate parser call each other (as in mutual recursion)
+
+WARNING: Don't use this parser to parse recursive data structures,
+because it may lead to infinite recursion on circular RDF.
+*/
+interface NodeParser {
+    T parse(T)(ParseContext parse_context, ModelWithoutFinalize Model, NodeWithoutFinalize node);
+}
+
+/**
+Parses a given predicate (which may participate in several relationships)
+of a given RDF node.
+
+Usually NodeParser and Predicate parser call each other (as in mutual recursion)
+*/
+class PredicateParser {
+    NodeWithoutFinalize predicate;
+    this(NodeWithoutFinalize _predicate) {
+        predicate = _predicate;
+    }
+    abstract T parse(T)(ParseContext parse_context, ModelWithoutFinalize Model, NodeWithoutFinalize node);
+}
+
+class NodeParserWithError : NodeParser {
+    ErrorMode on_error;
+    this(ErrorMode _on_error) {
+        on_error = _on_error;
+    }
+}
+
+class PredicateParserWithError : PredicateParser {
+    ErrorMode on_error;
+    this(NodeWithoutFinalize predicate, ErrorMode _on_error) {
+        super(predicate);
+        on_error = _on_error;
+    }
+}
+
+// TODO:
+//default_parse_context = providers.Factory(ParseContext, execution_context=Contexts.execution_context)
