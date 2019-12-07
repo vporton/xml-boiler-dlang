@@ -62,7 +62,7 @@ class CheckedNodeParser : NodeParserWithError {
         f = _f;
         error_msg = _error_msg;
     }
-    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
+    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
         auto v = child.parse(parse_context, model, node);
         if (!f(v)) parse_context.raise(on_error, error_msg);
         return v;
@@ -92,7 +92,7 @@ class Choice : NodeParserWithError {
         super(on_error);
         choices = _choices;
     }
-    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
+    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
         foreach(p; choices) {
             try {
                 return p.parse(parse_context, model, node);

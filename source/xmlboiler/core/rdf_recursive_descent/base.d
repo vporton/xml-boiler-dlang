@@ -99,8 +99,8 @@ Usually NodeParser and Predicate parser call each other (as in mutual recursion)
 WARNING: Don't use this parser to parse recursive data structures,
 because it may lead to infinite recursion on circular RDF.
 */
-class NodeParser { // TODO: Should it be interface
-    abstract BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
+interface NodeParser { // TODO: Should it be interface
+    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
 }
 
 /**
@@ -117,7 +117,7 @@ class PredicateParser {
     abstract BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
 }
 
-class NodeParserWithError : NodeParser {
+abstract class NodeParserWithError : NodeParser {
     ErrorMode on_error;
     this(ErrorMode _on_error) {
         on_error = _on_error;
