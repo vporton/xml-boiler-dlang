@@ -73,5 +73,6 @@ class UniversalVersion : Version {
         assert(other);
         return compareVersions(this, cast(UniversalVersion) other);
     }
+    override string toString() { return value; }
     private string value;
 }
