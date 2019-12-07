@@ -18,5 +18,5 @@ class DebianPackageManaging(BasePackageManaging) {
         return version_;
     }
 
-    alias VersionClass = VersionValue;
+    alias VersionClass = UniversalVersion;
 }

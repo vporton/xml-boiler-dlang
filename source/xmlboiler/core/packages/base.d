@@ -63,14 +63,15 @@ int compareVersions(string a, string b) {
     return aSplit.empty ? -1 : 1;
 }
 
-// TODO: Rename.
-struct VersionValue {
+// TODO: Support for distribution-specific version comparison rules.
+class UniversalVersion : Version {
     this (string _value) {
         value = _value;
     }
     alias value this;
-    int opCmp(VersionValue other) {
-        return compareVersions(this, other);
+    override int opCmp(Object other) {
+        assert(other);
+        return compareVersions(this, cast(UniversalVersion) other);
     }
     private string value;
 }
