@@ -80,6 +80,17 @@ class ParseContext {
     }
 }
 
+interface BaseParseResult { }
+
+class ParseResult(T): BaseParseResult {
+    private T m_value;
+    this(T _value) {
+        m_value = _value;
+    }
+    alias m_value this;
+    @property ref T getValue() { return m_value; }
+}
+
 /**
 Parses a node of RDF resource (and its "subnodes").
 
@@ -89,7 +100,7 @@ WARNING: Don't use this parser to parse recursive data structures,
 because it may lead to infinite recursion on circular RDF.
 */
 interface NodeParser {
-    T parse(T)(ParseContext parse_context, ModelWithoutFinalize Model, NodeWithoutFinalize node);
+    BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
 }
 
 /**
@@ -103,7 +114,7 @@ class PredicateParser {
     this(NodeWithoutFinalize _predicate) {
         predicate = _predicate;
     }
-    abstract T parse(T)(ParseContext parse_context, ModelWithoutFinalize Model, NodeWithoutFinalize node);
+    abstract BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node);
 }
 
 class NodeParserWithError : NodeParser {
