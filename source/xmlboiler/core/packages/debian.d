@@ -18,5 +18,5 @@ class DebianPackageManaging(BasePackageManaging) {
         return version_;
     }
 
-    //alias VersionClass = deb_pkg_tools.version.Version; // FIXME
+    alias VersionClass = VersionValue;
 }

@@ -63,6 +63,7 @@ int compareVersions(string a, string b) {
     return aSplit.empty ? -1 : 1;
 }
 
+// TODO: Rename.
 struct VersionValue {
     this (string _value) {
         value = _value;
