@@ -113,7 +113,7 @@ class ZeroOrMorePredicate : PredicateParser {
         super(predicate);
         child = _child;
     }
-    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) { // FIXME: narrow return type
+    override ParseResult!(BaseParseResult[]) parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
         auto iter = model.getTargets(node, predicate);
         auto result = map!(elt => child.parse(parse_context, model, elt))(cast(NodeIteratorWithoutFinalize) iter);
         return new ParseResult!(BaseParseResult[])(result.array); // TODO: Use a range.
@@ -126,9 +126,9 @@ class OneOrMorePredicate : PredicateParserWithError {
         super( _predicate, _on_error);
         child = _child;
     }
-    override BaseParseResult parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) { // FIXME: narrow return type
+    override ParseResult!(BaseParseResult[]) parse(ParseContext parse_context, ModelWithoutFinalize model, NodeWithoutFinalize node) {
         auto parent = new ZeroOrMorePredicate(predicate, child);
-        auto value = cast(ParseResult!(BaseParseResult[])) parent.parse(parse_context, model, node);
+        auto value = parent.parse(parse_context, model, node);
         if (value.value.length == 0) {
             string s() {
                 return parse_context.translate("Must have at least one predicate %s for node %s.").format(predicate, node);
