@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 module xmlboiler.core.rdf_recursive_descent.base;
 
+import rdf.redland.world;
 import rdf.redland.model;
 import rdf.redland.node;
 import xmlboiler.core.execution_context;
@@ -51,8 +52,10 @@ enum ErrorMode { IGNORE, WARNING, FATAL }
 
 class ParseContext {
     ExecutionContext execution_context;
-    this(ExecutionContext _execution_context) {
+    RedlandWorldWithoutFinalize world;
+    this(ExecutionContext _execution_context, RedlandWorld _world) {
         execution_context = _execution_context;
+        world = _world;
     }
     void raise(ErrorMode handler, string str, string file = __FILE__, size_t line = __LINE__) {
         raise( handler, () => str, file, line);
@@ -89,6 +92,10 @@ class ParseResult(T): BaseParseResult {
     }
     alias m_value this;
     @property ref T value() { return m_value; }
+}
+
+ParseResult!T createParseResult(T)(T value) {
+    return new ParseResult!T(value);
 }
 
 /**
