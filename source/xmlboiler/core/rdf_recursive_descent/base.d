@@ -98,6 +98,10 @@ ParseResult!T createParseResult(T)(T value) {
     return new ParseResult!T(value);
 }
 
+ParseResult!T createParseResult(T)(ref T value) {
+    return new ParseResult!T(value);
+}
+
 /**
 Parses a node of RDF resource (and its "subnodes").
 
