@@ -116,7 +116,7 @@ BinaryRelation!T compose(T)(BinaryRelation!T b, BinaryRelation!T a) {
 }
 
 BinaryRelation!T square(T)(BinaryRelation!T graph) {
-    return compose( graph, graph);
+    return compose(graph, graph);
 }
 
 BinaryRelation!T union_(T)(BinaryRelation!T a, BinaryRelation!T b) {
