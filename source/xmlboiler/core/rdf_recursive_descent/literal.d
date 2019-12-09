@@ -89,8 +89,7 @@ class FloatLiteral : NodeParserWithError {
         auto types = map!(s => URI.fromString(parse_context.world, "http://www.w3.org/2001/XMLSchema#" ~ s))(
             [ "integer", "float", "double", "decimal" ]
         );
-        auto types2 = map!(u => u.base)(types);
-        if (node.isLiteral && types2.canFind(node.datatypeURI)) {
+        if (node.isLiteral && types.canFind(node.datatypeURI)) {
             try {
                 return new ParseResult!double( to!double( node.toString));
             }
