@@ -18,68 +18,72 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-///**
-//:param graph:
-//:param path: a list of nodes
-//:param weight: a function
-//:return: a list of lists of edges
-//*/
-//def shortest_path_to_edges(graph, path, weight):
-//    result = []
-//    for i in range(len(path) - 1):
-//        last_weight = math.inf
-//        last_edges = []
-//
-//        for _, e in graph[path[i]][path[i + 1]].items():
-//            new_weight = weight(e['attr_dict'])
-//            if new_weight < last_weight:
-//                last_edges = []
-//            if new_weight <= last_weight:
-//                last_weight = new_weight
-//                last_edges.append(e['attr_dict'])
-//        result.append(last_edges)
-//    return result
-//
-///**
-//:param graph:
-//:param paths: a list of lists of nodes
-//:param weight: a function
-//:return: a list of lists of edges
-//*/
-//def shortest_paths_to_edges(graph, paths, weight):
-//    result = []
-//    last_weight = math.inf
-//    try:
-//        for path in paths:
-//            new_lists_of_edges = shortest_path_to_edges(graph, path, weight)
-//            for new_edges in new_lists_of_edges:
-//                new_weight = functools.reduce(operator.add, map(weight, new_edges), 0)
-//                if new_weight < last_weight:
-//                    result = []
-//                if new_weight <= last_weight:
-//                    last_weight = new_weight
-//                    result.append(new_edges)
-//    except NetworkXNoPath:
-//        pass
-//    return result
-//
-//
-///**
-//:param edges: a list of lists of edges
-//:param weight: a function
-//:return: a list of lists of edges
-//*/
-//def shortest_lists_of_edges(edges, weight):
-//    result = []
-//    last_weight = math.inf
-//    try:
-//        for cur_edges in edges:
-//            new_weight = functools.reduce(operator.add, map(weight, cur_edges), 0)
-//            if new_weight < last_weight:
-//                result = []
-//            if new_weight <= last_weight:
-//                last_weight = new_weight
-//                result.append(cur_edges)
-//    except NetworkXNoPath:
-//        pass
-//    return result
+/**
+:param graph:
+:param path: a list of nodes
+:param weight: a function
+:return: a list of lists of edges
+*/
+Edge[][] shortest_path_to_edges(Graph, Vertex, Edge)(Graph graph, Vertex[] path, real delegate(Edge) weight) {
+    Edge[][] result;
+    foreach(i; 0 .. path.length) {
+        real last_weight = infinity;
+        Edge[] last_edges;
+
+        foreach(e; edgesBetween(path[i], path[i + 1])) {
+            real new_weight = weight(e);
+            if (new_weight < last_weight)
+                last_edges = [];
+            if (new_weight <= last_weight) {
+                last_weight = new_weight;
+                last_edges.append(e);
+            }
+        }
+        result.append(last_edges);
+    }
+    return result;
+}
+
+/**
+:param graph:
+:param paths: a list of lists of nodes
+:param weight: a function
+:return: a list of lists of edges
+*/
+Edge[][] shortest_paths_to_edges(Graph, Vertex, Edge)(Graph graph, Vertex[][] paths, real delegate(Edge) weight) {
+    Edge[][] result;
+    real last_weight = infinity;
+    foreach (path; paths) {
+        Edge[][] new_lists_of_edges = shortest_path_to_edges(graph, path, weight);
+        foreach(new_edges; new_lists_of_edges) {
+            import std.algorithm.iteration;
+            immutable real new_weight = reduce!((a,b) => a + b)(0, map!weight(new_edges));
+            if (new_weight < last_weight) result = [];
+            if (new_weight <= last_weight) {
+                last_weight = new_weight;
+                result.append(new_edges);
+            }
+        }
+    }
+    return result;
+}
+
+/**
+:param edges: a list of lists of edges
+:param weight: a function
+:return: a list of lists of edges
+*/
+Edge[][] shortest_lists_of_edges(Edge)(Edge[][] edges, real delegate(Edge) weight) {
+    Edge[][] result;
+    real last_weight = infinity;
+    foreach (cur_edges; edges) {
+        immutable real new_weight = reduce!((a,b) => a + b)(0, map!weight(cur_edges));
+        if (new_weight < last_weight)
+            result = [];
+        if (new_weight <= last_weight) {
+            last_weight = new_weight;
+            result.append( cur_edges);
+        }
+    }
+    return result;
+}
