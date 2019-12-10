@@ -9,7 +9,7 @@
 		"urld": "~>2.1.1",
 		"mofile": "~>0.2.1",
 		"distro": "~>0.9.2",
-		"anansi": "~>0.0.3+commit.3.g77a354b"
+		"anansi": "~>0.0.3+commit.2.g5716672"
 	},
 	"libs": ["z"],
 	"description": "Automatically transform between XML namespaces: https://vporton.github.io/xml-boiler-docs/",
