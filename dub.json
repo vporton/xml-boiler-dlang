@@ -4,6 +4,7 @@
 		"Victor Porton"
 	],
 	"dependencies": {
+		"pure-dependency-injector": "~>0.9.17",
 		"rdf_dlang": "~master",
 		"ae": "~>0.0.2331",
 		"urld": "~>2.1.1",

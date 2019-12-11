@@ -20,6 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 module xmlboiler.core.rdf_recursive_descent.base;
 
+import struct_params;
+import pure_dependency.providers;
 import rdf.redland.world;
 import rdf.redland.model;
 import rdf.redland.node;
@@ -143,5 +145,8 @@ class PredicateParserWithError : PredicateParser {
     }
 }
 
-// TODO:
-//default_parse_context = providers.Factory(ParseContext, execution_context=Contexts.execution_context)
+// TODO: after execution_context_builders.d
+//mixin StructParams!("ParseContextParams", ExecutionContext, "execution_context");
+//immutable ParseContextParams.WithDefaults parseContextDefaults = { execution_context: Contexts.execution_context };
+//alias MyProvider = ProviderWithDefaults!(Callable!(c => ParseContext(c)), ParseContextParams, parseContextDefaults);
+//auto default_parse_context = new MyProvider();
