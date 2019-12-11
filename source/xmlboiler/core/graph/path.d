@@ -50,14 +50,15 @@ Edge[][] shortest_path_to_edges(Graph, Vertex, Edge)(Graph graph, Vertex[] path,
 :param weight: a function
 :return: a list of lists of edges
 */
-Edge[][] shortest_paths_to_edges(Graph, Vertex, Edge)(Graph graph, Vertex[][] paths, real delegate(Edge) weight) {
+Edge[][] shortest_paths_to_edges(Graph, Vertex, Edge, alias sumFunction = (a, b) => a+b)
+                                (Graph graph, Vertex[][] paths, real delegate(Edge) weight) {
     Edge[][] result;
     real last_weight = infinity;
     foreach (path; paths) {
         Edge[][] new_lists_of_edges = shortest_path_to_edges(graph, path, weight);
         foreach(new_edges; new_lists_of_edges) {
             import std.algorithm.iteration;
-            immutable real new_weight = reduce!((a,b) => a + b)(0, map!weight(new_edges));
+            immutable real new_weight = reduce!sumFunction(0, map!weight(new_edges));
             if (new_weight < last_weight) result = [];
             if (new_weight <= last_weight) {
                 last_weight = new_weight;
@@ -73,16 +74,16 @@ Edge[][] shortest_paths_to_edges(Graph, Vertex, Edge)(Graph graph, Vertex[][] pa
 :param weight: a function
 :return: a list of lists of edges
 */
-Edge[][] shortest_lists_of_edges(Edge)(Edge[][] edges, real delegate(Edge) weight) {
+Edge[][] shortest_lists_of_edges(Edge, alias sumFunction = (a, b) => a+b)(Edge[][] edges, real delegate(Edge) weight) {
     Edge[][] result;
     real last_weight = infinity;
     foreach (cur_edges; edges) {
-        immutable real new_weight = reduce!((a,b) => a + b)(0, map!weight(cur_edges));
+        immutable real new_weight = reduce!sumFunction(0, map!weight(cur_edges));
         if (new_weight < last_weight)
             result = [];
         if (new_weight <= last_weight) {
             last_weight = new_weight;
-            result.append( cur_edges);
+            result.append(cur_edges);
         }
     }
     return result;
