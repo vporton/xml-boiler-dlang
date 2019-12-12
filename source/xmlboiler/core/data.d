@@ -18,6 +18,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+module xmlboiler.core.data;
+
 import std.conv;
 import std.stdio;
 import std.file;
@@ -71,12 +73,12 @@ struct Global {
     }
 }
 
-Provider!(Global, RedlandWorldWithoutFinalize) globalProvider;
 mixin StructParams!("GlobalProvidersParams", RedlandWorldWithoutFinalize, "world");
 immutable GlobalProvidersParams.Func globalProviderDefaults = { world: () => rdfWorldProvider() };
 alias GlobalProviderWithDefaults = ProviderWithDefaults!(Callable!((RedlandWorldWithoutFinalize world) => Global(world)),
                                                          GlobalProvidersParams,
                                                          globalProviderDefaults);
+GlobalProviderWithDefaults globalProvider;
 static this() {
     globalProvider = new GlobalProviderWithDefaults();
 }

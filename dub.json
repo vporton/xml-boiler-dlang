@@ -4,7 +4,7 @@
 		"Victor Porton"
 	],
 	"dependencies": {
-		"pure-dependency-injector": "~>0.9.17",
+		"pure-dependency-injector": "~>0.9.18",
 		"struct-params": "~>1.1.0",
 		"rdf_dlang": "~master",
 		"ae": "~>0.0.2331",
