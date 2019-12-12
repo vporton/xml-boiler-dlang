@@ -20,6 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 module xmlboiler.core.graph.relation;
 
+import std.container.rbtree;
+
 /**
 Directed graph with at most one edge between vertices
 */
