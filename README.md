@@ -5,6 +5,8 @@ in D programming language.
 
 Currently this rewrite is not yet finished.
 
+[The current state of the project.](https://portonsoft.wordpress.com/2019/12/12/a-programming-task-i-overengineered/)
+
 ==
 
 Automatically transform between XML namespaces.
