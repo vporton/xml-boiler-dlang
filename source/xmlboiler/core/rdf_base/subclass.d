@@ -87,7 +87,7 @@ mixin StructParams!("SubclassRelationParams", RedlandWorldWithoutFinalize, "worl
 
 immutable SubclassRelationParams.Func subclassRelationProviderDefaults = {
     world: () => rdfWorldProvider(),
-    context: () => Nullable!ExecutionContext(), // FIXME: Contexts.execution_context,
+    context: () => executionContextProvider(),
     graph: () => basic_subclasses_graph,
 };
 alias SubclassRelationProviderWithDefaults = ProviderWithDefaults!(Callable!(

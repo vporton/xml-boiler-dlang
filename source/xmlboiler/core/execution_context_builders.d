@@ -20,6 +20,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 module xmlboiler.core.execution_context_builders;
 
+import std.stdio;
+import std.experimental.logger;
+import mofile;
+import struct_params;
+import pure_dependency.providers;
+
 public import xmlboiler.core.execution_context;
 
-// TODO
+// FIXME: Don't open stderr multiple times.
+mixin StructParams!("ExecutionContextParams", Logger, "logger", MoFile, "mo");
+immutable ExecutionContextParams.Func executionContextDefaults =
+    { logger: () => new FileLogger(stderr), mo: () => MoFile() };
+alias ExecutionContextProvider =
+    ProviderWithDefaults!(Callable!((Logger logger, MoFile translations) => ExecutionContext(logger, translations)),
+                          ExecutionContextParams,
+    executionContextDefaults);
+ExecutionContextProvider executionContextProvider;
+static this() { executionContextProvider = new ExecutionContextProvider; }
