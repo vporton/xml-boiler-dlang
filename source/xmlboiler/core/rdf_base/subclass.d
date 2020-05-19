@@ -21,14 +21,20 @@ class SubclassRelation : Connectivity!(URI.HandleObject) {
     Node relation;
     this(RedlandWorldWithoutFinalize _world,
          ExecutionContext _context,
-         MyAdjacencyList graph=MyAdjacencyList(),
-         Node _relation=Node.fromURIString(world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
+         Node _relation,
+         MyAdjacencyList graph=MyAdjacencyList())
     {
         super();
         world = _world;
         context = _context;
         relation = _relation;
         add_graph( graph);
+    }
+    this(RedlandWorldWithoutFinalize _world,
+         ExecutionContext _context,
+         MyAdjacencyList graph=MyAdjacencyList())
+    {
+        this(_world, _context, Node.fromURIString(_world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"), _graph);
     }
 
     bool add_graph(ModelWithoutFinalize graph) {
@@ -86,36 +92,44 @@ class SubclassRelationForType : SubclassRelation {
 shared basic_subclasses_graph = new ThreadSafeCallableSingleton!(
     () => globalProvider().load_rdf("core/data/subclasses.ttl"))();
 
-Provider!(SubclassRelation, RedlandWorldWithoutFinalize, ExecutionContext, AdjacencyList, Node) subclassRelationProvider;
-mixin StructParams!("SubclassRelationParams", RedlandWorldWithoutFinalize, "world",
-                                              ExecutionContext, "context",
-                                              MyAdjacencyList, "graph",
-                                              Node, "relation");
+Provider!(SubclassRelation, RedlandWorldWithoutFinalize, ExecutionContext, Node, AdjacencyList) subclassRelationProvider;
+mixin StructParams!("SubclassRelationProvidersParams", RedlandWorldWithoutFinalize, "world",
+                                                       ExecutionContext, "context",
+                                                       Node, "relation",
+                                                       MyAdjacencyList, "graph");
 
-immutable SubclassRelationParams.Func subclassRelationProviderDefaults = {
+immutable SubclassRelationProvidersParams.Func subclassRelationProviderDefaults = {
     world: () => rdfWorldProvider(),
     context: () => executionContextProvider(),
     graph: () => MyAdjacencyList(),
 };
 alias SubclassRelationProviderWithDefaults = ProviderWithDefaults!(Callable!(
-    (RedlandWorldWithoutFinalize world, ExecutionContext context, MyAdjacencyList graph, Node.HandleObject t)
-        => new SubclassRelation(world, context, graph, t)),
+    (RedlandWorldWithoutFinalize world, ExecutionContext context, Node t, MyAdjacencyList graph)
+        => new SubclassRelation(world, context, t.dup, graph)),
     SubclassRelationProvidersParams,
     globalProviderDefaults);
 static this() {
     subclassRelationProvider = new SubclassRelationProviderWithDefaults();
 }
 
+Provider!(SubclassRelationForTypeProvidersParams, Node, RedlandWorldWithoutFinalize, ExecutionContext, Node, AdjacencyList) subclassRelationForTypeProvider;
+mixin StructParams!("SubclassRelationForTypeProvidersParams",
+                    NodeWithoutFinalize, "node_class",
+                    RedlandWorldWithoutFinalize, "world",
+                    ExecutionContext, "context",
+                    MyAdjacencyList, "graph",
+                    Node, "relation");
+
 immutable SubclassRelationForTypeProvidersParams.Func subclassRelationForTypeProviderDefaults = {
     world: () => rdfWorldProvider(),
-    context: () => null, // FIXME: Contexts.execution_context,
-    graph: () => basic_subclasses_graph,
+    context: () => executionContextProvider(),
+    graph: () => MyAdjacencyList(),
 };
 alias SubclassRelationForTypeProviderWithDefaults = ProviderWithDefaults!(Callable!(
-    (RedlandWorldWithoutFinalize world, ExecutionContext context, MyAdjacencyList graph, Node t)
-        => SubclassRelationForType(world, context, graph, t)),
+    (NodeWithoutFinalize node_class, RedlandWorldWithoutFinalize world, ExecutionContext context, Node t, MyAdjacencyList graph)
+        => new SubclassRelationForType(node_class, world, context, t.dup, graph)),
     SubclassRelationForTypeProvidersParams,
     globalProviderDefaults);
 static this() {
-    subclassRelationProvider = new SubclassRelationForTypeProviderWithDefaults();
+    subclassRelationForTypeProvider = new SubclassRelationForTypeProviderWithDefaults();
 }
