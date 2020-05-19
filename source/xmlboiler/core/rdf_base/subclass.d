@@ -88,10 +88,10 @@ mixin StructParams!("SubclassRelationParams", RedlandWorldWithoutFinalize, "worl
 immutable SubclassRelationParams.Func subclassRelationProviderDefaults = {
     world: () => rdfWorldProvider(),
     context: () => executionContextProvider(),
-    graph: () => basic_subclasses_graph,
+    graph: () => MyAdjacencyList(),
 };
 alias SubclassRelationProviderWithDefaults = ProviderWithDefaults!(Callable!(
-    (RedlandWorldWithoutFinalize world, ExecutionContext context, AdjacencyList graph, RDFNode t)
+    (RedlandWorldWithoutFinalize world, ExecutionContext context, MyAdjacencyList graph, Node t)
         => SubclassRelation(world, context, grap, t)),
     SubclassRelationProvidersParams,
     globalProviderDefaults);
@@ -105,8 +105,8 @@ immutable SubclassRelationForTypeProvidersParams.Func subclassRelationForTypePro
     graph: () => basic_subclasses_graph,
 };
 alias SubclassRelationForTypeProviderWithDefaults = ProviderWithDefaults!(Callable!(
-    (RedlandWorldWithoutFinalize world, ExecutionContext context, AdjacencyList graph, Node t)
-        => SubclassRelationForType(world, context, grap, t)),
+    (RedlandWorldWithoutFinalize world, ExecutionContext context, MyAdjacencyList graph, Node t)
+        => SubclassRelationForType(world, context, graph, t)),
     SubclassRelationForTypeProvidersParams,
     globalProviderDefaults);
 static this() {
