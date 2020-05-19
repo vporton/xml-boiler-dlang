@@ -30,7 +30,7 @@ GraphT transitive_closure(GraphT)(GraphT graph) {
     }
 }
 
-struct Connectivity(T) {
+class Connectivity(T) {
     BinaryRelation!T connectivity = new BinaryRelation!T();
     bool is_connected(T src, T dst) {
         return src == dst || connectivity.adjanced(src, dst);

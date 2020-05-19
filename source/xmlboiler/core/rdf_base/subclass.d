@@ -15,7 +15,7 @@ import xmlboiler.core.data;
 
 alias MyAdjacencyList = AdjacencyList!();
 
-class SubclassRelation : Connectivity!URI.HandleObject {
+class SubclassRelation : Connectivity!(URI.HandleObject) {
     RedlandWorldWithoutFinalize world;
     ExecutionContext context;
     Node relation;
@@ -59,13 +59,20 @@ class SubclassRelationForType : SubclassRelation {
     this(NodeWithoutFinalize _node_class,
          RedlandWorldWithoutFinalize _world,
          ExecutionContext _context,
-         MyAdjacencyList graph=MyAdjacencyList(),
-         Node _relation=Node.fromURIString(world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
+         Node _relation,
+         MyAdjacencyList graph=MyAdjacencyList())
     {
         node_class = _node_class; // need to set before super()
         super(_world, _context, _graph, _relation);
     }
-    bool check_types(ModelWithoutFinalize graph, NodeWithoutFinalize src, NodeWithoutFinalize dst) {
+    this(NodeWithoutFinalize _node_class,
+         RedlandWorldWithoutFinalize _world,
+         ExecutionContext _context,
+         MyAdjacencyList graph=MyAdjacencyList())
+    {
+        this(_node_class, _world, _context, Node.fromURIString(_world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"), _graph);
+    }
+    override bool check_types(ModelWithoutFinalize graph, NodeWithoutFinalize src, NodeWithoutFinalize dst) {
         src_ok = graph.contains(src, Node.fromURIString(world, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), node_class);
         dst_ok = graph.contains(dst, Node.fromURIString(world, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), node_class);
         if (src_ok ^ dst_ok) {
@@ -91,8 +98,8 @@ immutable SubclassRelationParams.Func subclassRelationProviderDefaults = {
     graph: () => MyAdjacencyList(),
 };
 alias SubclassRelationProviderWithDefaults = ProviderWithDefaults!(Callable!(
-    (RedlandWorldWithoutFinalize world, ExecutionContext context, MyAdjacencyList graph, Node t)
-        => SubclassRelation(world, context, grap, t)),
+    (RedlandWorldWithoutFinalize world, ExecutionContext context, MyAdjacencyList graph, Node.HandleObject t)
+        => new SubclassRelation(world, context, graph, t)),
     SubclassRelationProvidersParams,
     globalProviderDefaults);
 static this() {
