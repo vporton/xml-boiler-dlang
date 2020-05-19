@@ -1,23 +1,28 @@
+import std.typecons;
 import struct_params;
 import pure_dependency.providers;
 import anansi.adjacencylist;
 import rdf.redland.world;
+import rdf.redland.uri;
 import rdf.redland.node;
 import rdf.redland.statement;
+import rdf.redland.model;
 import xmlboiler.core.data : Global;
 import xmlboiler.core.graph.relation : BinaryRelation;
 import xmlboiler.core.graph.connect : Connectivity;
 import xmlboiler.core.execution_context_builders;
 import xmlboiler.core.data;
 
-class SubclassRelation : Connectivity!Node {
+alias MyAdjacencyList = AdjacencyList!();
+
+class SubclassRelation : Connectivity!URI.HandleObject {
     RedlandWorldWithoutFinalize world;
     ExecutionContext context;
-    RDFNode relation;
+    Node relation;
     this(RedlandWorldWithoutFinalize _world,
          ExecutionContext _context,
-         AdjacencyList graph=AdjacencyList(),
-         RDFNode _relation=Node.fromURIString(world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
+         MyAdjacencyList graph=MyAdjacencyList(),
+         Node _relation=Node.fromURIString(world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
     {
         super();
         world = _world;
@@ -49,18 +54,18 @@ class SubclassRelation : Connectivity!Node {
     }
 }
 
-class SubclassRelationForType : SubclassRelation!T {
+class SubclassRelationForType : SubclassRelation {
     Node node_class;
     this(NodeWithoutFinalize _node_class,
          RedlandWorldWithoutFinalize _world,
          ExecutionContext _context,
-         AdjacencyList graph=AdjacencyList(),
-         RDFNode _relation=Node.fromURIString(world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
+         MyAdjacencyList graph=MyAdjacencyList(),
+         Node _relation=Node.fromURIString(world, "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
     {
         node_class = _node_class; // need to set before super()
         super(_world, _context, _graph, _relation);
     }
-    def check_types(ModelWithoutFinalize graph, NodeWithoutFinalize src, NodeWithoutFinalize dst) {
+    bool check_types(ModelWithoutFinalize graph, NodeWithoutFinalize src, NodeWithoutFinalize dst) {
         src_ok = graph.contains(src, Node.fromURIString(world, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), node_class);
         dst_ok = graph.contains(dst, Node.fromURIString(world, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), node_class);
         if (src_ok ^ dst_ok) {
@@ -71,18 +76,18 @@ class SubclassRelationForType : SubclassRelation!T {
     }
 }
 
-shared basic_subclasses_graph = ThreadSafeCallableSingleton!(
-    () => globalProvider().load_rdf("core/data/subclasses.ttl"));
+shared basic_subclasses_graph = new ThreadSafeCallableSingleton!(
+    () => globalProvider().load_rdf("core/data/subclasses.ttl"))();
 
 Provider!(SubclassRelation, RedlandWorldWithoutFinalize, ExecutionContext, AdjacencyList, Node) subclassRelationProvider;
 mixin StructParams!("SubclassRelationParams", RedlandWorldWithoutFinalize, "world",
                                               ExecutionContext, "context",
-                                              AdjacencyList, "graph",
+                                              MyAdjacencyList, "graph",
                                               Node, "relation");
 
-immutable SubclassRelationProvidersParams.Func subclassRelationProviderDefaults = {
+immutable SubclassRelationParams.Func subclassRelationProviderDefaults = {
     world: () => rdfWorldProvider(),
-    context: () => null, // FIXME: Contexts.execution_context,
+    context: () => Nullable!ExecutionContext(), // FIXME: Contexts.execution_context,
     graph: () => basic_subclasses_graph,
 };
 alias SubclassRelationProviderWithDefaults = ProviderWithDefaults!(Callable!(
